@@ -1,3 +1,6 @@
+from .location_requests import get_single_location
+from .customer_requests import get_single_customer
+
 ANIMALS = [
     {
         "id": 1,
@@ -29,19 +32,26 @@ def get_all_animals():
 
     # Function with a single parameter
 
+
 def get_single_animal(id):
-    # Variable to hold the found animal, if it exists
     requested_animal = None
 
-    # Iterate the ANIMALS list above. Very similar to the
-    # for..of loops you used in JavaScript.
     for animal in ANIMALS:
-        # Dictionaries in Python use [] notation to find a key
-        # instead of the dot notation that JavaScript used.
         if animal["id"] == id:
             requested_animal = animal
 
+    matching_location = get_single_location(requested_animal["locationId"])
+    requested_animal["location"] = matching_location
+
+    matching_customer = get_single_customer(requested_animal["customerId"])
+    requested_animal["customer"] = matching_customer
+
+    requested_animal.pop("locationId", None)
+    requested_animal.pop("customerId", None)
+
     return requested_animal
+
+
 
 def create_animal(animal):
     # Get the id value of the last animal in the list
@@ -59,6 +69,7 @@ def create_animal(animal):
     # Return the dictionary with `id` property added
     return animal
 
+
 def delete_animal(id):
     # Initial -1 value for animal index, in case one isn't found
     animal_index = -1
@@ -74,6 +85,7 @@ def delete_animal(id):
     if animal_index >= 0:
         ANIMALS.pop(animal_index)
 
+
 def update_animal(id, new_animal):
     # Iterate the ANIMALS list, but use enumerate() so that
     # you can access the index value of each item.
@@ -82,3 +94,5 @@ def update_animal(id, new_animal):
             # Found the animal. Update the value.
             ANIMALS[index] = new_animal
             break
+
+

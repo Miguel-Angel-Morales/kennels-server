@@ -7,10 +7,12 @@ EMPLOYEES = [
     }
 ]
 
+
 def get_all_employees():
     return EMPLOYEES
 
-def get_single_employee(id): 
+
+def get_single_employee(id):
     requested_employee = None
 
     for employee in EMPLOYEES:
@@ -18,6 +20,7 @@ def get_single_employee(id):
             requested_employee = employee
 
     return requested_employee
+
 
 def create_employee(employee):
     max_id = EMPLOYEES[-1]["id"]
@@ -29,6 +32,7 @@ def create_employee(employee):
     EMPLOYEES.append(employee)
 
     return employee
+
 
 def delete_employee(id):
     # Initial -1 value for employee index, in case one isn't found
@@ -44,6 +48,7 @@ def delete_employee(id):
     # If the employee was found, use pop(int) to remove it from list
     if employee_index >= 0:
         EMPLOYEES.pop(employee_index)
+
 
 def update_employee(id, new_employee):
     # Iterate the employeeS list, but use enumerate() so that

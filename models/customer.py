@@ -3,4 +3,5 @@ class Customer():
         self.id = id
         self.name = name
 
+
 new_customer = Customer(2, "Monica")

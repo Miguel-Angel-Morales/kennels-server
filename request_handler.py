@@ -25,6 +25,8 @@ from views import update_location
 # For now, think of a class as a container for functions that
 # work together for a common purpose. In this case, that
 # common purpose is to respond to HTTP requests from a client.
+
+
 class HandleRequests(BaseHTTPRequestHandler):
     def parse_url(self, path):
         # Just like splitting a string in JavaScript. If the
@@ -58,8 +60,6 @@ class HandleRequests(BaseHTTPRequestHandler):
     def do_GET(self):
         """Handles GET requests to the server
         """
-        # Set the response code to 'Ok'
-        self._set_headers(200)
         response = {}  # Default response
 
         # Parse the URL and capture the tuple that is returned
@@ -68,13 +68,20 @@ class HandleRequests(BaseHTTPRequestHandler):
         if resource == "animals":
             if id is not None:
                 response = get_single_animal(id)
-
+                if response is None:
+                    self._set_headers(404)
+                    response = {
+                        "error": "Animal was captured by David Blane, is now Unicorn galloping on rainbows throughout the universe"}
             else:
                 response = get_all_animals()
 
         if resource == "locations":
             if id is not None:
                 response = get_single_location(id)
+                if response is None:
+                    self._set_headers(404)
+                    response = {
+                        "error": "Location is currently under seige, return with reinforcements."}
 
             else:
                 response = get_all_locations()
@@ -82,6 +89,10 @@ class HandleRequests(BaseHTTPRequestHandler):
         if resource == "employees":
             if id is not None:
                 response = get_single_employee(id)
+                if response is None:
+                    self._set_headers(404)
+                    response = {
+                        "error": "Employee has been out to lunch for 82 years..."}
 
             else:
                 response = get_all_employees()
@@ -89,10 +100,14 @@ class HandleRequests(BaseHTTPRequestHandler):
         if resource == "customers":
             if id is not None:
                 response = get_single_customer(id)
+                if response is None:
+                    self._set_headers(404)
+                    response = {
+                        "error": "customer is unaware of the majesty of animal retail therapy, whats wrong with being a crazy cat lady?"}
 
             else:
                 response = get_all_customers()
-
+        self._set_headers(200)
         self.wfile.write(json.dumps(response).encode())
 
     # Here's a method on the class that overrides the parent's method.
@@ -108,40 +123,54 @@ class HandleRequests(BaseHTTPRequestHandler):
         # Parse the URL
         (resource, id) = self.parse_url(self.path)
 
-        # Initialize new animal
-        new_animal = None
-        new_location = None
-        new_employee = None
-        new_customer = None
+        # Initialize new resource variables
+        new_resource = None
 
-        # Add a new animal to the list. Don't worry about
-        # the orange squiggle, you'll define the create_animal
-        # function next.
         if resource == "animals":
-            new_animal = create_animal(post_body)
-            response = create_animal
+            if "name" in post_body and "species" in post_body:
+                new_resource = create_animal(post_body)
+            else:
+                self._set_headers(400)
+                new_resource = {
+                    "message":
+                    f'{"name is required" if "name" not in post_body else ""} {"species is required" if "species" not in post_body else ""}'
+                }
 
         if resource == "locations":
-            new_location = create_location(post_body)
-            response = create_location
-        
+            if "name" in post_body and "address" in post_body:
+                new_resource = create_location(post_body)
+            else:
+                self._set_headers(400)
+                new_resource = {
+                    "message": f'{"name is required" if "name" not in post_body else ""} {"address is required" if "address" not in post_body else ""}'
+                }
+
         if resource == "employees":
-            new_employee = create_employee(post_body)
-            response = create_employee
+            if "name" in post_body and "position" in post_body:
+                new_resource = create_employee(post_body)
+            else:
+                self._set_headers(400)
+                new_resource = {
+                    "message": f'{"name is required" if "name" not in post_body else ""} {"address is required" if "address" not in post_body else ""}'
+                }
 
         if resource == "customers":
-            new_customer = create_customer(post_body)
-            response = create_customer
+            if "name" in post_body:
+                new_resource = create_customer(post_body)
+            else:
+                self._set_headers(400)
+                new_resource = {
+                    "message": f'name is required'
+                }
 
-        # Encode the new animal and send in response
-        self.wfile.write(json.dumps(response).encode())
-
+        # Encode the new resource and send in response
+        self.wfile.write(json.dumps(new_resource).encode())
 
     # A method that handles any PUT request.
-    #def do_PUT(self):
+    # def do_PUT(self):
     """Handles PUT requests to the server"""
-    #self.do_PUT()
-    
+    # self.do_PUT()
+
     def do_PUT(self):
         self._set_headers(204)
         content_len = int(self.headers.get('content-length', 0))
@@ -165,7 +194,8 @@ class HandleRequests(BaseHTTPRequestHandler):
             update_location(id, post_body)
 
         # Encode the new animal and send in response
-        self.wfile.write("".encode())
+        self.wfile.write(json.dumps(
+            {"message": "Resource updated successfully"}).encode())
 
     def _set_headers(self, status):
         # Notice this Docstring also includes information about the arguments passed to the function
@@ -186,35 +216,43 @@ class HandleRequests(BaseHTTPRequestHandler):
         """
         self.send_response(200)
         self.send_header('Access-Control-Allow-Origin', '*')
-        self.send_header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE')
-        self.send_header('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept')
+        self.send_header('Access-Control-Allow-Methods',
+                         'GET, POST, PUT, DELETE')
+        self.send_header('Access-Control-Allow-Headers',
+                         'X-Requested-With, Content-Type, Accept')
         self.end_headers()
-    
-    def do_DELETE(self):
-    # Set a 204 response code
-        self._set_headers(204)
 
+    def do_DELETE(self):
         # Parse the URL
         (resource, id) = self.parse_url(self.path)
 
-        # Delete a single animal from the list
-        if resource == "animals":
-            delete_animal(id)
-
-        if resource == "locations":
-            delete_location(id)
-
-        if resource == "employees":
-            delete_employee(id)
-
         if resource == "customers":
-            delete_customer(id)
+            # Customers cannot be deleted, send a 405 Method Not Allowed response
+            self._set_headers(405)
+            response = {
+                "error": "Deleting customers is not allowed."
+            }
+        else:
+            # For other resources, proceed with the delete operation
+            self._set_headers(204)
 
-        # Encode the new animal and send in response
-        self.wfile.write("".encode())
+            if resource == "animals":
+                delete_animal(id)
+            elif resource == "locations":
+                delete_location(id)
+            elif resource == "employees":
+                delete_employee(id)
+
+            response = ""
+
+        # Encode the response and send it
+        self.wfile.write(json.dumps(response).encode())
+
 
 # This function is not inside the class. It is the starting
 # point of this application.
+
+
 def main():
     """Starts the server on port 8088 using the HandleRequests class
     """
@@ -225,5 +263,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-        
