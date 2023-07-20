@@ -30,28 +30,65 @@ ANIMALS = [
 ]
 
 
-""" def get_all_animals():
-    return ANIMALS """
-    # Function with a single parameter
+def get_animal_by_location(location_id):
 
+    with sqlite3.connect("./kennel.sqlite3") as conn:
+        conn.row_factory = sqlite3.Row
+        db_cursor = conn.cursor()
 
-""" def get_single_animal(id):
-    requested_animal = None
+        # Write the SQL query to get the information you want
+        db_cursor.execute("""
+        SELECT
+            a.id,
+            a.name,
+            a.breed,
+            a.status,
+            a.location_id,
+            a.customer_id
+        FROM animal a
+        WHERE a.location_id = ?
+        """, ( location_id, ))
 
-    for animal in ANIMALS:
-        if animal["id"] == id:
-            requested_animal = animal
+        animals = []
+        dataset = db_cursor.fetchall()
 
-    matching_location = get_single_location(requested_animal["locationId"])
-    requested_animal["location"] = matching_location
+        for row in dataset:
+            animal = Animal(row['id'], row['name'], row['breed'],
+                            row['status'], row['location_id'],
+                            row['customer_id'])
+            animals.append(animal.__dict__)
 
-    matching_customer = get_single_customer(requested_animal["customerId"])
-    requested_animal["customer"] = matching_customer
+    return animals
 
-    requested_animal.pop("locationId", None)
-    requested_animal.pop("customerId", None)
+def get_animal_by_status(status):
 
-    return requested_animal """
+    with sqlite3.connect("./kennel.sqlite3") as conn:
+        conn.row_factory = sqlite3.Row
+        db_cursor = conn.cursor()
+
+        # Write the SQL query to get the information you want
+        db_cursor.execute("""
+        select
+            a.id,
+            a.name,
+            a.breed,
+            a.status,
+            a.location_id,
+            a.customer_id
+        FROM animal a
+        WHERE a.status = ?
+        """, ( status, ))
+
+        animals = []
+        dataset = db_cursor.fetchall()
+
+        for row in dataset:
+            animal = Animal(row['id'], row['name'], row['breed'],
+                            row['status'], row['location_id'],
+                            row['customer_id'])
+            animals.append(animal.__dict__)
+
+    return animals
 
 def get_all_animals():
     # Open a connection to the database

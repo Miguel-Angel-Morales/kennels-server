@@ -17,8 +17,8 @@ CREATE TABLE `Animal` (
 	`name`  TEXT NOT NULL,
 	`status` TEXT NOT NULL,
 	`breed` TEXT NOT NULL,
-	`customer_id` INTEGER NOT NULL,
 	`location_id` INTEGER,
+	`customer_id` INTEGER NOT NULL,
 	FOREIGN KEY(`customer_id`) REFERENCES `Customer`(`id`),
 	FOREIGN KEY(`location_id`) REFERENCES `Location`(`id`)
 );
@@ -50,7 +50,6 @@ INSERT INTO `Customer` VALUES (null, "Jenna Solis", "301 Redirect Ave", "jenna@s
 INSERT INTO `Customer` VALUES (null, "Emily Lemmon", "454 Mulberry Way", "emily@lemmon.com", "password");
 
 
-
 INSERT INTO `Animal` VALUES (null, "Snickers", "Recreation", "Dalmation", 4, 1);
 INSERT INTO `Animal` VALUES (null, "Jax", "Treatment", "Beagle", 1, 1);
 INSERT INTO `Animal` VALUES (null, "Falafel", "Treatment", "Siamese", 4, 2);
@@ -64,8 +63,8 @@ INSERT INTO `Animal` VALUES (null, "Curly", "Treatment", "Poodle", 4, 2);
 SELECT
     a.id,
     a.name,
-    a.breed,
     a.status,
+    a.breed,
     a.location_id,
     a.customer_id
 FROM animal a
@@ -73,28 +72,28 @@ WHERE a.id = 3
 
 -- Get only the customer rows where the `id` field value is 3
 SELECT
-    a.id,
-    a.name,
-    a.address,
-    a.email,
-    a.password
-FROM customer a
-WHERE a.id = 3
+    c.id,
+    c.name,
+    c.address,
+    c.email,
+    c.password
+FROM customer c
+WHERE c.id = 3
 
 -- Get only the employee rows where the `id` field value is 3
 SELECT
-    a.id,
-    a.name,
-    a.address,
-    a.location_id
-FROM employee a
-WHERE a.id = 1
+    e.id,
+    e.name,
+    e.address,
+    e.location_id
+FROM employee e
+WHERE e.id = 3
 
 -- Get only the location rows where the `id` field value is 3
 SELECT
-    a.id,
-    a.name,
-    a.address
-FROM location a
-WHERE a.id = 2
+    l.id,
+    l.name,
+    l.address
+FROM location l
+WHERE l.id = 2
 
