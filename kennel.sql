@@ -63,12 +63,22 @@ INSERT INTO `Animal` VALUES (null, "Curly", "Treatment", "Poodle", 4, 2);
 SELECT
     a.id,
     a.name,
-    a.status,
     a.breed,
+    a.status,
     a.location_id,
-    a.customer_id
-FROM animal a
-WHERE a.id = 3
+    a.customer_id,
+    l.name AS location_name,
+    l.address AS location_address,
+    c.name AS customer_name,
+    c.email AS customer_email
+FROM Animal a
+JOIN Location l ON a.location_id = l.id
+JOIN Customer c ON a.customer_id = c.id
+ORDER BY a.id DESC;
+
+
+
+
 
 -- Get only the customer rows where the `id` field value is 3
 SELECT
@@ -85,9 +95,11 @@ SELECT
     e.id,
     e.name,
     e.address,
-    e.location_id
+    e.location_id,
+    l.name AS location_name,
+    l.address AS location_address
 FROM employee e
-WHERE e.id = 3
+JOIN Location l ON e.location_id = l.id;
 
 -- Get only the location rows where the `id` field value is 3
 SELECT
@@ -95,5 +107,7 @@ SELECT
     l.name,
     l.address
 FROM location l
-WHERE l.id = 2
+WHERE l.id = 2;
+
+
 

@@ -5,6 +5,6 @@ class Employee():
         self.name = name
         self.address = address
         self.location_id = location_id
+        self.location = None
 
-
-new_Employee = Employee(2, "Mary", "1010 Where St.", 1)
+#new_Employee = Employee(2, "Mary", "1010 Where St.", 1)

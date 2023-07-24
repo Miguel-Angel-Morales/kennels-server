@@ -1,6 +1,7 @@
 import sqlite3
 import json
 from models import Employee
+from models import Location
 
 EMPLOYEES = [
     {
@@ -124,3 +125,31 @@ def update_employee(id, new_employee):
             # Found the employee. Update the value.
             EMPLOYEES[index] = new_employee
             break
+
+def get_all_employees_with_locations():
+    with sqlite3.connect("./kennel.sqlite3") as conn:
+        conn.row_factory = sqlite3.Row
+        db_cursor = conn.cursor()
+
+        db_cursor.execute("""
+        SELECT
+            e.id,
+            e.name,
+            e.address,
+            e.location_id,
+            l.name AS location_name,
+            l.address AS location_address
+        FROM employee e
+        JOIN Location l ON e.location_id = l.id;
+        """)
+        
+        employees = []
+        dataset = db_cursor.fetchall()
+
+        for row in dataset:
+            employee = Employee(row['id'], row['name'], row['address'], row['location_id'])
+            location = Location(row['location_id'], row['location_name'], row['location_address'])
+            employee.location = location.__dict__
+            employees.append(employee.__dict__)
+
+        return employees
